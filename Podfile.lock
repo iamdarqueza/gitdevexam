@@ -1,0 +1,32 @@
+PODS:
+  - Connectivity (5.0.0)
+  - IQKeyboardManagerSwift (6.5.6)
+  - SkeletonView (1.4.2)
+  - SwiftLint (0.42.0)
+  - Wormholy (1.6.3)
+
+DEPENDENCIES:
+  - Connectivity
+  - IQKeyboardManagerSwift
+  - SkeletonView (~> 1.4.2)
+  - SwiftLint
+  - Wormholy (~> 1.6)
+
+SPEC REPOS:
+  trunk:
+    - Connectivity
+    - IQKeyboardManagerSwift
+    - SkeletonView
+    - SwiftLint
+    - Wormholy
+
+SPEC CHECKSUMS:
+  Connectivity: e990703fb8d8db54649ea05facac92000cc0f3eb
+  IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
+  SkeletonView: c2523c3c8c6510e273e49a3bf364a434744c3914
+  SwiftLint: 4fa9579c63416865179bc416f0a92d55f009600d
+  Wormholy: bfc1c8679eefd0edd92638758e21c3961b1b3b50
+
+PODFILE CHECKSUM: d273b4dbb0afff28de6898fe858c3d8868876f6e
+
+COCOAPODS: 1.10.0
