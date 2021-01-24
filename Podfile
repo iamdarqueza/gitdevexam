@@ -11,5 +11,6 @@ target 'Tawk.to' do
   pod 'SwiftLint'
   pod 'Connectivity'
   pod 'Wormholy', '~> 1.6'
+  pod 'Loaf'
 
 end

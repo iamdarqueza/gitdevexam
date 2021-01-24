@@ -19,7 +19,6 @@ enum CellIdentifiers: String {
     
     case devTableViewCell
 
-
 }
 
 

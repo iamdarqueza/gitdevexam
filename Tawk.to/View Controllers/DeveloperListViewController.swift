@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import Connectivity
+import Loaf
 
 class DeveloperListViewController: UIViewController {
 
@@ -32,9 +33,10 @@ class DeveloperListViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setupConnectivityNotifier()
+        configureConnectivityNotifier()
         tableView.reloadData()
     }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == SegueIdentifiers.showProfile.rawValue {
@@ -44,6 +46,8 @@ class DeveloperListViewController: UIViewController {
         }
     }
     
+    
+    // MARK: - Configure table view
     private func configureTableView() {
       tableView.translatesAutoresizingMaskIntoConstraints = false
       tableView.delegate = self
@@ -53,12 +57,16 @@ class DeveloperListViewController: UIViewController {
       tableView.rowHeight = 100
     }
     
+    
+    // MARK: - Configure search button
     private func configureSearchBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         searchBar.placeholder = "Search developer.."
         searchBar.delegate = self
     }
     
+    
+    // MARK: - Configure internet connection checker
     private func configureConnectivity() {
         connectivity.checkConnectivity { [weak self] connectivity in
           guard let s = self else { return }
@@ -67,7 +75,7 @@ class DeveloperListViewController: UIViewController {
           case .connected, .connectedViaWiFi, .connectedViaCellular:
             s.getDeveloperList()
           case .connectedViaWiFiWithoutInternet, .notConnected, .connectedViaCellularWithoutInternet:
-//            s.showOfflineToastBar()
+            Loaf("You have no internet connection", state: .error, location: .top, sender: s).show()
             s.getOfflineList()
           case .determining:
             break
@@ -75,9 +83,8 @@ class DeveloperListViewController: UIViewController {
         }
     }
     
-    // MARK: - Setup Connectivity Observer
-
-    private func setupConnectivityNotifier() {
+    // MARK: - Configure internet connection notifier
+    private func configureConnectivityNotifier() {
       let publisher = Connectivity.Publisher()
       cancellable = publisher.receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
@@ -90,15 +97,14 @@ class DeveloperListViewController: UIViewController {
         })
     }
     
-    // MARK: - Check update connectivity and display online or offline
-
+    // MARK: - Check connection and display online or offline
     private func updateConnectionStatus(_ status: Connectivity.Status) {
       switch status {
       case .connectedViaWiFi, .connectedViaCellular, .connected:
         isOffline = false
         if fromOffline {
             fromOffline = false
-//          showOnlineToastBar()
+            Loaf("You have an active internet connection", state: .success, location: .top, sender: self).show()
           if CoreDataManager.shared.getUsers().count == 0 {
             getDeveloperList()
           }
@@ -106,14 +112,13 @@ class DeveloperListViewController: UIViewController {
       case .connectedViaWiFiWithoutInternet, .connectedViaCellularWithoutInternet, .notConnected:
         isOffline = true
         fromOffline = true
-//        showOfflineToastBar()
+        Loaf("You have no internet connection", state: .error, location: .top, sender: self).show()
       case .determining:
         break
       }
     }
     
-    // MARK: - Get Devs
-
+    // MARK: - Get developer list
     private func getDeveloperList() {
       viewModel.requestDevList(
         onSuccess: onHandleSuccess(),
@@ -121,35 +126,33 @@ class DeveloperListViewController: UIViewController {
       )
     }
 
-    // MARK: - Get Devs in Core Data during offline mode
-
+    
+    // MARK: - Get developer list in Core Data when offline
     private func getOfflineList() {
       viewModel.getOfflineUser()
       tableView.reloadData()
     }
+    
+    
+    // MARK: - Success Get developer list
+    private func onHandleSuccess() -> SingleResult<Bool> {
+      return { [weak self] status in
+        guard let s = self, status else { return }
+        DispatchQueue.main.async {
+          s.tableView.reloadData()
+        }
+      }
+    }
 
-//    // MARK: - Show offline toast
-//
-//    func showOfflineToastBar() {
-//      toastView.backgroundColor = .red
-//      toastLabel.text = S.offlineTitle()
-//
-//      toastView.isHidden = false
-//    }
+    // MARK: - Display error encountered after fetch
+    private func onHandleError() -> SingleResult<String> {
+      return { [weak self] message in
+        guard let s = self else { return }
+          s.presentDismissableAlertController(title: "Oops!", message: message)
+      }
+    }
 
-//    // MARK: - Show online toast view
-//
-//    func showOnlineToastBar() {
-//      toastView.backgroundColor = .green
-//      toastLabel.text = S.onlineTitle()
-//
-//      toastView.isHidden = false
-//
-//      DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
-//        [unowned self] in
-//        self.toastView.isHidden = true
-//      }
-//    }
+
     
     
 
@@ -194,7 +197,6 @@ extension DeveloperListViewController: UITableViewDataSource, UITableViewDelegat
         tableView.tableFooterView = spinner
 
         if !isSearching && !isOffline {
-//          toastView.isHidden = true
           getDeveloperList()
           DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             tableView.tableFooterView = nil
@@ -210,7 +212,7 @@ extension DeveloperListViewController: UITableViewDataSource, UITableViewDelegat
 
 extension DeveloperListViewController: UISearchBarDelegate {
 
-    // MARK: - Update Search Result
+    // MARK: - Update search result
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if let text = searchBar.text, !text.isEmpty {
           isSearching = true
@@ -223,26 +225,4 @@ extension DeveloperListViewController: UISearchBarDelegate {
     }
     
 
-}
-
-private extension DeveloperListViewController {
-
-  // MARK: - On Success Getting Dev list
-  func onHandleSuccess() -> SingleResult<Bool> {
-    return { [weak self] status in
-      guard let s = self, status else { return }
-      DispatchQueue.main.async {
-        s.tableView.reloadData()
-      }
-    }
-  }
-
-  // MARK: - Display Error encountered after fetch
-
-  func onHandleError() -> SingleResult<String> {
-    return { [weak self] message in
-      guard let s = self else { return }
-        s.presentDismissableAlertController(title: "Oops!", message: message)
-    }
-  }
 }

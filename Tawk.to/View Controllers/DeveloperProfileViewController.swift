@@ -21,7 +21,7 @@ class DeveloperProfileViewController: UIViewController {
     @IBOutlet weak var saveNoteButton: DesignableButton!
     @IBOutlet weak var detailView: UIView!
     @IBOutlet weak var noteView: UIView!
-    
+
     @IBOutlet weak var screenView: UIView!
     @IBOutlet var screenParentView: UIView!
     
@@ -70,13 +70,14 @@ class DeveloperProfileViewController: UIViewController {
         noteTextView.delegate = self
     }
     
-    // MARK: - Request Dev Details
+    
+    // MARK: - Get developer details
     private func getDevDetails() {
       showSkeletonView()
       viewModel.requestDevInfo(onSuccess: onHandleSuccess(), onError: onHandleError())
     }
     
-    // MARK: - On Success Dev Details Fetch
+    // MARK: - Success get developer details
     private func onHandleSuccess() -> SingleResult<Bool> {
       return { [weak self] status in
         guard let s = self, status else { return }
@@ -86,7 +87,7 @@ class DeveloperProfileViewController: UIViewController {
       }
     }
 
-    // MARK: - On Success Save Save Notes
+    // MARK: - Success save note
     private func onSaveSuccess() -> SingleResult<Bool> {
       return { [weak self] status in
         guard let s = self, status else { return }
@@ -96,7 +97,7 @@ class DeveloperProfileViewController: UIViewController {
       }
     }
     
-    // MARK: - Display Error encountered after fetch
+    // MARK: - Display error encountered after fetch
     private func onHandleError() -> SingleResult<String> {
       return { [weak self] message in
           guard let s = self else { return }
@@ -105,6 +106,7 @@ class DeveloperProfileViewController: UIViewController {
     }
     
     
+    // MARK: - Show skeleton loading
     private func showSkeletonView() {
         followersLabel.showAnimatedGradientSkeleton()
         followingLabel.showAnimatedGradientSkeleton()
@@ -113,6 +115,7 @@ class DeveloperProfileViewController: UIViewController {
         blogLabel.showAnimatedGradientSkeleton()
     }
     
+    // MARK: - Hide skeleton loading
     private func hideSkeletonView() {
         followersLabel.hideSkeleton()
         followingLabel.hideSkeleton()
@@ -121,6 +124,8 @@ class DeveloperProfileViewController: UIViewController {
         blogLabel.hideSkeleton()
     }
     
+    
+    // MARK: - Configure background view to suppport dark mode
     private func configureBackgroundView() {
         if (self.traitCollection.userInterfaceStyle == .dark) {
             screenView.backgroundColor = UIColor.colorWithRGBHex(0x07070E)

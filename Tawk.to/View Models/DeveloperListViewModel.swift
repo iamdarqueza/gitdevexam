@@ -7,8 +7,7 @@
 
 import Foundation
 
-// MARK: - Protocol for DevListViewModel
-
+// MARK: - Protocol for DeveloperListViewModel
 protocol DeveloperListViewModelProtocol {
   var lastDevId: Int { get set }
   var sinceId: Int { get set }
@@ -34,7 +33,7 @@ final class DeveloperListViewModel: DeveloperListViewModelProtocol {
     queue.maxConcurrentOperationCount = 1
   }
 
-  // MARK: - request for Dev List
+  // MARK: - Request developer list
   func requestDevList(onSuccess: @escaping SingleResult<Bool>, onError: @escaping SingleResult<String>) {
     
     queue.cancelAllOperations()
@@ -90,7 +89,7 @@ final class DeveloperListViewModel: DeveloperListViewModelProtocol {
     }
   }
   
-  // MARK: - After clear search set it back to original list
+  // MARK: - Show original data after clearing search
   func setOriginalList() {
     developerList = originalList
   }

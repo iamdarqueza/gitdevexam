@@ -26,6 +26,7 @@ class DevTableViewCell: UITableViewCell {
     }
     
     
+    // MARK: - Populate developer detail on table view cell
     func configure(withDev dev: Devs, index: Int) {
         hideSkeletonView()
         let invertColor = (index + 1) % 4 == 0 && index > 0
@@ -45,21 +46,21 @@ class DevTableViewCell: UITableViewCell {
       }
     
     
-    // MARK: - Show All Skeleton View
+    // MARK: - Show skeleton loading
     func showSkeletonView() {
         devProfileImageView.showAnimatedGradientSkeleton()
         devUsernameLabel.showAnimatedGradientSkeleton()
         devDetailLabel.showAnimatedGradientSkeleton()
     }
 
-    // MARK: - Hide All Skeleton View
+    // MARK: - Hide skeleton loading
     func hideSkeletonView() {
         devProfileImageView.hideSkeleton()
         devUsernameLabel.hideSkeleton()
         devDetailLabel.hideSkeleton()
     }
     
-    // MARK: - Invert Image Color
+    // MARK: - Invert image color
     private func changeImage(image: UIImage?) {
       if let filter = CIFilter(name: "CIColorInvert"),
         let image = image,

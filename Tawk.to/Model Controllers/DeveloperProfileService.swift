@@ -12,8 +12,10 @@ protocol DeveloperProfileServiceProtocol {
   func getDeveloperProfile(username: String, onHandleCompletion: @escaping ResultClosure<DeveloperProfileResponse>)
 }
 
+
+// MARK: - DeveloperProfileService API request
 final class DeveloperProfileService: BaseService, DeveloperProfileServiceProtocol {
-  // MARK: - Request Dev Details
+
   func getDeveloperProfile(username: String, onHandleCompletion: @escaping ResultClosure<DeveloperProfileResponse>) {
     
     let url: URL! = URL(string: "https://api.github.com/users/\(username)")
